@@ -36,9 +36,10 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { LucideEdit3, LucideTrash } from "lucide-react";
+import { LucideEdit3, LucideTrash, LucideFileText } from "lucide-react";
 import { statusColors } from "../domain/lead-status-constants";
 import type { Lead } from "../domain/lead.interfact";
+import { AddActivity } from "../components/AddActivity";
 
 export default function LeadsListPage() {
   const { leads, leadsCount, newLeadsCount, deleteLead } = use(LeadsContext);
@@ -49,6 +50,8 @@ export default function LeadsListPage() {
   } | null>(null);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [leadToEdit, setLeadToEdit] = useState<any>(null);
+  const [activityDialogOpen, setActivityDialogOpen] = useState(false);
+  const [leadForActivity, setLeadForActivity] = useState<string | null>(null);
 
   const handleDeleteClick = (leadId: string, leadName: string) => {
     setLeadToDelete({ id: leadId, name: leadName });
@@ -76,6 +79,16 @@ export default function LeadsListPage() {
   const handleEditOpenChange = (open: boolean) => {
     setEditDialogOpen(open);
   };
+
+  const handleActivityClick = (leadId: string) => {
+    setLeadForActivity(leadId);
+    setActivityDialogOpen(true);
+  };
+
+  const leadOptions = leads.map((lead) => ({
+    id: lead.id,
+    name: lead.name,
+  }));
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -191,6 +204,15 @@ export default function LeadsListPage() {
                       <TableCell> {lead.dateAdded} </TableCell>
                       <TableCell className="text-right">
                         <Button
+                          variant="ghost"
+                          size="sm"
+                          className="mr-2"
+                          onClick={() => handleActivityClick(lead.id)}
+                          title="Log activity"
+                        >
+                          <LucideFileText />
+                        </Button>
+                        <Button
                           variant="outline"
                           size="sm"
                           className="mr-2"
@@ -214,6 +236,14 @@ export default function LeadsListPage() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Activity Dialog */}
+      <AddActivity
+        leads={leadOptions}
+        preselectedLeadId={leadForActivity || undefined}
+        open={activityDialogOpen}
+        onOpenChange={setActivityDialogOpen}
+      />
 
       {/* Delete Confirmation Dialog */}
       <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
