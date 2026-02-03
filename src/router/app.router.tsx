@@ -1,6 +1,6 @@
 import { LeadsLayout } from "@/leads/layouts/LeadsLayout";
-import LeadsListPage from "@/leads/pages/HomePage";
-import KanbanPage from "@/leads/pages/KanbanPage";
+import LeadsListPage from "@/leads/pages/home/HomePage";
+import KanbanPage from "@/leads/pages/kanban/KanbanPage";
 import ActivityPage from "@/leads/pages/ActivityPage";
 import { createBrowserRouter, Navigate } from "react-router";
 import LeadPage from "@/leads/pages/LeadPage";

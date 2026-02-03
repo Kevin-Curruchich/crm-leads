@@ -1,4 +1,4 @@
-import { use, useState } from "react";
+import { use, useMemo, useRef } from "react";
 import {
   Card,
   CardContent,
@@ -6,6 +6,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { formatRelativeDate } from "@/lib/date.utils";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import {
@@ -25,6 +26,8 @@ import {
 import { AddActivity } from "../components/AddActivity";
 import { LeadsContext } from "../context/LeadsContext";
 import type { Activity } from "../domain/activity.interface";
+import { activityColors } from "../domain/activity.constant";
+import { useSearchParams } from "react-router";
 
 // Mock activity data - TODO: Replace with real data from context
 const mockActivities: Activity[] = [
@@ -84,7 +87,7 @@ const mockActivities: Activity[] = [
   },
 ];
 
-const activityIcons = {
+export const activityIcons = {
   CALL: <LucidePhone className="w-4 h-4" />,
   EMAIL: <LucideMail className="w-4 h-4" />,
   NOTE: <LucideFileText className="w-4 h-4" />,
@@ -92,39 +95,16 @@ const activityIcons = {
   STATUS_CHANGE: <LucideRefreshCw className="w-4 h-4" />,
 };
 
-const activityColors = {
-  CALL: "bg-blue-100 text-blue-700 border-blue-200",
-  EMAIL: "bg-purple-100 text-purple-700 border-purple-200",
-  NOTE: "bg-gray-100 text-gray-700 border-gray-200",
-  MEETING: "bg-green-100 text-green-700 border-green-200",
-  STATUS_CHANGE: "bg-orange-100 text-orange-700 border-orange-200",
-};
-
-const formatDate = (dateString: string) => {
-  const date = new Date(dateString);
-  const now = new Date();
-  const diffMs = now.getTime() - date.getTime();
-  const diffMins = Math.floor(diffMs / 60000);
-  const diffHours = Math.floor(diffMs / 3600000);
-  const diffDays = Math.floor(diffMs / 86400000);
-
-  if (diffMins < 60) return `${diffMins} minutes ago`;
-  if (diffHours < 24) return `${diffHours} hours ago`;
-  if (diffDays === 1) return "Yesterday";
-  if (diffDays < 7) return `${diffDays} days ago`;
-
-  return date.toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-    year: date.getFullYear() !== now.getFullYear() ? "numeric" : undefined,
-  });
-};
-
 export default function ActivityPage() {
+  const [searchParams, setSearchParams] = useSearchParams();
+
   const { leads } = use(LeadsContext);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [filterType, setFilterType] = useState<string>("all");
-  const [filterLead, setFilterLead] = useState<string>("all");
+
+  const searchQuery = searchParams.get("search") || "";
+  const filterType = searchParams.get("type") || "all";
+  const filterLead = searchParams.get("lead") || "all";
+
+  const searchRef = useRef<HTMLInputElement>(null);
 
   // TODO: Replace with real activities from context
   const activities = mockActivities;
@@ -141,10 +121,33 @@ export default function ActivityPage() {
     return matchesSearch && matchesType && matchesLead;
   });
 
-  const leadOptions = leads.map((lead) => ({
-    id: lead.id,
-    name: lead.name,
-  }));
+  const setQueryParams = (name: string, value: string) => {
+    searchParams.set(name, value);
+    setSearchParams(searchParams);
+  };
+
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === "Enter") {
+      const query = searchRef.current?.value || "";
+
+      setQueryParams("search", query);
+    }
+  };
+
+  const handleTypeChange = (value: string) => {
+    setQueryParams("type", value);
+  };
+
+  const handleLeadChange = (value: string) => {
+    setQueryParams("lead", value);
+  };
+
+  const leadOptions = useMemo(() => {
+    return leads.map((lead) => ({
+      id: lead.id,
+      name: lead.name,
+    }));
+  }, [leads]);
 
   return (
     <div className="space-y-6">
@@ -162,13 +165,14 @@ export default function ActivityPage() {
         {/* Filters */}
         <div className="flex gap-4 mb-6">
           <Input
+            ref={searchRef}
             type="text"
             placeholder="Search activities..."
             className="flex-1"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            defaultValue={searchQuery}
+            onKeyDown={handleKeyDown}
           />
-          <Select value={filterType} onValueChange={setFilterType}>
+          <Select value={filterType} onValueChange={handleTypeChange}>
             <SelectTrigger className="w-40">
               <SelectValue placeholder="Activity type" />
             </SelectTrigger>
@@ -181,7 +185,7 @@ export default function ActivityPage() {
               <SelectItem value="STATUS_CHANGE">Status Changes</SelectItem>
             </SelectContent>
           </Select>
-          <Select value={filterLead} onValueChange={setFilterLead}>
+          <Select value={filterLead} onValueChange={handleLeadChange}>
             <SelectTrigger className="w-48">
               <SelectValue placeholder="Filter by lead" />
             </SelectTrigger>
@@ -251,7 +255,7 @@ export default function ActivityPage() {
                         </h3>
                       </div>
                       <time className="text-xs text-gray-500 whitespace-nowrap ml-4">
-                        {formatDate(activity.dateCreated)}
+                        {formatRelativeDate(activity.dateCreated)}
                       </time>
                     </div>
                     <p className="text-sm text-gray-600 mb-2">

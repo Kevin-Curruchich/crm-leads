@@ -1,4 +1,6 @@
-import { use, useState, useEffect, type PropsWithChildren } from "react";
+import { use } from "react";
+import { useSearchParams } from "react-router";
+
 import * as z from "zod";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -22,7 +24,6 @@ import {
 } from "@/components/ui/select";
 import { LeadsContext } from "../context/LeadsContext";
 import { LeadStatus } from "../domain/lead-status.type";
-import type { Lead } from "../domain/lead.interfact";
 
 const formSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
@@ -33,30 +34,42 @@ const formSchema = z.object({
   status: z.enum(LeadStatus),
 });
 
-interface AddNewLeadProps extends PropsWithChildren {
-  lead?: Lead;
-  open?: boolean;
-  onOpenChange?: (open: boolean) => void;
-  trigger?: React.ReactNode;
-}
+export const AddNewLead = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
 
-export const AddNewLead = ({
-  lead,
-  open: controlledOpen,
-  onOpenChange,
-  trigger,
-  children,
-}: AddNewLeadProps) => {
-  const { addLead, updateLead } = use(LeadsContext);
-  const [internalOpen, setInternalOpen] = useState(false);
+  const leadModalOpen = searchParams.get("leadModalOpen") === "true" || false;
+  const leadId = searchParams.get("leadId") || null;
 
-  const open = controlledOpen !== undefined ? controlledOpen : internalOpen;
-  const setOpen = onOpenChange || setInternalOpen;
+  const { addLead, updateLead, getLeadById } = use(LeadsContext);
 
-  const isEditMode = !!lead;
+  const open = leadModalOpen;
+
+  const leadData = leadId
+    ? getLeadById?.(leadId)
+    : {
+        name: "",
+        lastName: "",
+        email: "",
+        phone: "",
+        company: "",
+        status: LeadStatus.NEW,
+      };
+
+  const setOpen = (isOpen: boolean) => {
+    if (isOpen) {
+      searchParams.set("leadModalOpen", "true");
+    } else {
+      searchParams.delete("leadModalOpen");
+      searchParams.delete("leadId");
+    }
+    setSearchParams(searchParams);
+  };
+
+  const isEditMode = !!leadId;
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
+    values: leadData,
     defaultValues: {
       name: "",
       lastName: "",
@@ -67,31 +80,9 @@ export const AddNewLead = ({
     },
   });
 
-  useEffect(() => {
-    if (lead && open) {
-      form.reset({
-        name: lead.name,
-        lastName: lead.lastName,
-        email: lead.email,
-        phone: lead.phone,
-        company: lead.company,
-        status: lead.status,
-      });
-    } else if (!open) {
-      form.reset({
-        name: "",
-        lastName: "",
-        email: "",
-        phone: "",
-        company: "",
-        status: LeadStatus.NEW,
-      });
-    }
-  }, [lead, open, form]);
-
   function onSubmit(data: z.infer<typeof formSchema>) {
-    if (isEditMode && lead) {
-      updateLead(lead.id, data);
+    if (isEditMode && leadId) {
+      updateLead(leadId, data);
     } else {
       addLead(data);
     }
@@ -101,14 +92,10 @@ export const AddNewLead = ({
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      {trigger && <DialogTrigger asChild>{trigger}</DialogTrigger>}
-      {!trigger && !controlledOpen && (
-        <DialogTrigger asChild>
-          <Button>Add New Lead</Button>
-        </DialogTrigger>
-      )}
+      <DialogTrigger asChild>
+        <Button>Add New Lead</Button>
+      </DialogTrigger>
 
-      {children}
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>{isEditMode ? "Edit Lead" : "Add New Lead"}</DialogTitle>
@@ -118,7 +105,11 @@ export const AddNewLead = ({
               : "Enter the details of your new client."}
           </DialogDescription>
         </DialogHeader>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <form
+          key={leadId || "new-lead"}
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="space-y-4"
+        >
           <div className="space-y-2">
             <label htmlFor="name" className="text-sm font-medium">
               Name

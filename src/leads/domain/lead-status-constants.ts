@@ -33,9 +33,19 @@ export const leadStatusColumns: LeadStatusColumn[] = [
   },
 ];
 
+export const LEAD_STATUS_OPTIONS = [
+  { value: "all", label: "All Status" },
+  { value: LeadStatus.NEW, label: "New" },
+  { value: LeadStatus.CONTACTED, label: "Contacted" },
+  { value: LeadStatus.QUALIFIED, label: "Qualified" },
+  { value: LeadStatus.PROPOSAL_SENT, label: "Proposal Sent" },
+  { value: LeadStatus.WON, label: "Won" },
+  { value: LeadStatus.LOST, label: "Lost" },
+];
+
 export const statusColors: Record<string, string> = {
-  NEW: "bg-blue-100 text-blue-800",
-  CONTACTED: "bg-yellow-100 text-yellow-800",
+  NEW: "bg-yellow-100 text-yellow-800",
+  CONTACTED: "bg-orange-100 text-yellow-800",
   QUALIFIED: "bg-green-100 text-green-800",
   PROPOSAL_SENT: "bg-indigo-100 text-indigo-800",
   WON: "bg-green-100 text-green-800",

@@ -2,12 +2,21 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { LucideSearch, LucideX } from "lucide-react";
 import { useSearchParams } from "react-router";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { LEAD_STATUS_OPTIONS } from "../domain/lead-status-constants";
 
 export const SearchLeads = () => {
   const [searchParams, setSearchParams] = useSearchParams();
 
   const searchTerm = searchParams.get("search") || "";
   const dateFilter = searchParams.get("date") || "";
+  const statusFilter = searchParams.get("status") || "all";
 
   return (
     <div className="space-y-4 mb-6">
@@ -52,6 +61,33 @@ export const SearchLeads = () => {
           />
         </div>
 
+        {/* Filter by status */}
+        <div className="flex-1">
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Filter by Status
+          </label>
+          <Select
+            defaultValue={statusFilter}
+            onValueChange={(value) => {
+              setSearchParams((prev) => {
+                prev.set("status", value);
+                return prev;
+              });
+            }}
+          >
+            <SelectTrigger className="w-40">
+              <SelectValue placeholder="Filter by status" />
+            </SelectTrigger>
+            <SelectContent>
+              {LEAD_STATUS_OPTIONS.map((option) => (
+                <SelectItem key={option.value} value={option.value}>
+                  {option.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
         {/* Clear button */}
         <Button
           variant="outline"
@@ -60,6 +96,7 @@ export const SearchLeads = () => {
             setSearchParams((prev) => {
               prev.delete("search");
               prev.delete("date");
+              prev.delete("status");
               return prev;
             });
           }}

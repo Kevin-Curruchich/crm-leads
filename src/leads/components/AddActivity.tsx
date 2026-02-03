@@ -1,4 +1,3 @@
-import { useState } from "react";
 import * as z from "zod";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -21,6 +20,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { LucidePlus } from "lucide-react";
+import { activityTypes } from "../domain/activity.constant";
+import { useSearchParams } from "react-router";
 
 const formSchema = z.object({
   leadId: z.string().min(1, "Please select a lead"),
@@ -36,16 +37,12 @@ interface AddActivityProps {
   onOpenChange?: (open: boolean) => void;
 }
 
-export const AddActivity = ({
-  leads,
-  preselectedLeadId,
-  open: controlledOpen,
-  onOpenChange,
-}: AddActivityProps) => {
-  const [internalOpen, setInternalOpen] = useState(false);
+export const AddActivity = ({ leads, preselectedLeadId }: AddActivityProps) => {
+  const [searchParams, setSearchParams] = useSearchParams();
 
-  const open = controlledOpen !== undefined ? controlledOpen : internalOpen;
-  const setOpen = onOpenChange || setInternalOpen;
+  const addActivityParam = searchParams.get("addActivity");
+
+  const open = addActivityParam === "true" ? true : false;
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -60,28 +57,34 @@ export const AddActivity = ({
   function onSubmit(data: z.infer<typeof formSchema>) {
     console.log("Activity data:", data);
     // TODO: Implement addActivity function
-    form.reset();
-    setOpen(false);
   }
 
-  const activityTypes = [
-    { value: "NOTE", label: "Note", icon: "📝" },
-    { value: "CALL", label: "Call", icon: "📞" },
-    { value: "EMAIL", label: "Email", icon: "📧" },
-    { value: "MEETING", label: "Meeting", icon: "🤝" },
-    { value: "STATUS_CHANGE", label: "Status Change", icon: "🔄" },
-  ];
+  const onChangeDialogDisplay = (isOpen: boolean) => {
+    if (isOpen) {
+      searchParams.set("addActivity", "true");
+      setSearchParams(searchParams);
+    } else {
+      onCloseResetDialog(false);
+    }
+  };
+
+  const onCloseResetDialog = (reset: boolean = false) => {
+    if (reset) {
+      form.reset();
+    }
+    searchParams.delete("addActivity");
+    setSearchParams(searchParams);
+  };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      {controlledOpen === undefined && (
-        <DialogTrigger asChild>
-          <Button>
-            <LucidePlus className="mr-2 h-4 w-4" />
-            Log Activity
-          </Button>
-        </DialogTrigger>
-      )}
+    <Dialog open={open} onOpenChange={onChangeDialogDisplay}>
+      <DialogTrigger asChild>
+        <Button>
+          <LucidePlus className="mr-2 h-4 w-4" />
+          Log Activity
+        </Button>
+      </DialogTrigger>
+
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>Log Activity</DialogTitle>
@@ -214,10 +217,7 @@ export const AddActivity = ({
             <Button
               type="button"
               variant="outline"
-              onClick={() => {
-                form.reset();
-                setOpen(false);
-              }}
+              onClick={() => onCloseResetDialog(true)}
               className="flex-1"
             >
               Cancel

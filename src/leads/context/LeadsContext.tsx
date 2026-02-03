@@ -14,6 +14,7 @@ interface LeadsContext extends LeadsState {
   updateLead: (leadId: string, leadData: Partial<Lead>) => void;
   setLeads: (leads: Lead[]) => void;
   deleteLead: (leadId: string) => void;
+  getLeadById?: (leadId: string) => Lead | undefined;
 }
 
 export const LeadsContext = createContext<LeadsContext>({} as LeadsContext);
@@ -58,6 +59,10 @@ export const LeadsProvider = ({ children }: PropsWithChildren) => {
     dispatch({ type: "SET_LEADS", payload: leads });
   };
 
+  const getLeadById = (leadId: string): Lead | undefined => {
+    return state.leads.find((lead) => lead.id === leadId);
+  };
+
   useEffect(() => {
     localStorage.setItem("leads", JSON.stringify(state.leads));
   }, [state.leads]);
@@ -70,6 +75,7 @@ export const LeadsProvider = ({ children }: PropsWithChildren) => {
         updateLead,
         setLeads,
         deleteLead,
+        getLeadById,
       }}
     >
       {children}

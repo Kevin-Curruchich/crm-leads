@@ -1,6 +1,6 @@
-import { LeadStatus } from "../domain/lead-status.type";
 import type { Lead } from "../domain/lead.interfact";
 import type { LeadsState } from "../domain/leads-state.interface";
+import { nowISO } from "@/lib/date.utils";
 
 export type LeadsAction =
   | { type: "ADD_LEAD"; payload: Omit<Lead, "id" | "dateAdded"> }
@@ -22,7 +22,7 @@ export const leadsReducer = (
         ...action.payload,
         id: crypto.randomUUID(),
         column: action.payload.status,
-        dateAdded: new Date().toISOString(),
+        dateAdded: nowISO(),
       };
       let newLeads = [...state.leads, newLead];
       return {
