@@ -240,7 +240,7 @@ enum LeadStatus {
 
 ## 🔮 Próximos Pasos
 
-- [ ] Implementar funcionalidad completa de actividades (crear, listar, persistir)
+- [x] Implementar funcionalidad completa de actividades (crear, listar, persistir)
 - [ ] Agregar página de detalle individual de lead
 - [ ] Implementar filtros avanzados (por fecha de seguimiento)
 - [ ] Tests unitarios y de integración
