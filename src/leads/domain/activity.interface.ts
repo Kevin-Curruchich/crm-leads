@@ -13,5 +13,4 @@ export interface Activity {
   title: string;
   description: string;
   dateCreated: string;
-  createdBy: string;
 }

@@ -1,3 +1,7 @@
+import { useNavigate, useSearchParams } from "react-router";
+
+import { formatRelativeDate } from "@/lib/date.utils";
+
 import { Button } from "@/components/ui/button";
 import {
   Table,
@@ -7,20 +11,21 @@ import {
   TableBody,
   TableCell,
 } from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
+
 import { LucideFileText, LucideEdit3, LucideTrash } from "lucide-react";
 
-import { statusColors } from "@/leads/domain/lead-status-constants";
-import { formatRelativeDate } from "@/lib/date.utils";
-import type { Lead } from "@/leads/domain/lead.interfact";
-import { useSearchParams } from "react-router";
 import { DeleteLead } from "@/leads/components/DeleteLead";
-import { Badge } from "@/components/ui/badge";
+
+import { statusColors } from "@/leads/domain/lead-status-constants";
+import type { Lead } from "@/leads/domain/lead.interfact";
 
 interface Props {
   leads: Lead[];
 }
 
 export const LeadsTable = ({ leads }: Props) => {
+  const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
 
   const handleDeleteClick = (leadId: string, leadName: string) => {
@@ -36,6 +41,13 @@ export const LeadsTable = ({ leads }: Props) => {
       prevParams.set("leadId", lead.id);
       return prevParams;
     });
+  };
+
+  const handleAddLeadActivity = (leadId: string) => {
+    navigate("/leads/activity");
+    searchParams.set("addActivity", "true");
+    searchParams.set("leadId", leadId);
+    setSearchParams(searchParams);
   };
 
   return (
@@ -73,6 +85,9 @@ export const LeadsTable = ({ leads }: Props) => {
                   size="sm"
                   className="mr-2"
                   title="Log activity"
+                  onClick={() => {
+                    handleAddLeadActivity(lead.id);
+                  }}
                 >
                   <LucideFileText />
                 </Button>

@@ -1,3 +1,4 @@
+import { LeadStatus } from "../domain/lead-status.type";
 import type { Lead } from "../domain/lead.interfact";
 import type { LeadsState } from "../domain/leads-state.interface";
 import { nowISO } from "@/lib/date.utils";
@@ -53,15 +54,29 @@ export const leadsReducer = (
       return {
         ...state,
         leads: updatedLeads,
+        newLeadsCount: updatedLeads.filter(
+          (lead) => lead.status === LeadStatus.NEW,
+        ).length,
       };
 
     case "SET_LEADS":
+      const leadsMapped = action.payload.map((lead) => ({
+        ...lead,
+        status: lead.column,
+      }));
+
       return {
         ...state,
-        leads: action.payload.map((lead) => ({
-          ...lead,
-          status: lead.column,
-        })),
+
+        newLeadsCount: leadsMapped.filter(
+          (lead) => lead.status === LeadStatus.NEW,
+        ).length,
+
+        qualifiedLeadsCount: leadsMapped.filter(
+          (lead) => lead.status === LeadStatus.QUALIFIED,
+        ).length,
+
+        leads: leadsMapped,
       };
 
     case "DELETE_LEAD":

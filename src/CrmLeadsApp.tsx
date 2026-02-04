@@ -3,6 +3,7 @@ import { appRoute } from "./router/app.router";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { LeadsProvider } from "./leads/context/LeadsContext";
+import { ActivityProvider } from "./leads/context/ActivityContext";
 
 const queryClient = new QueryClient();
 
@@ -11,8 +12,10 @@ const CrmLeadsApp = () => {
     <>
       <QueryClientProvider client={queryClient}>
         <LeadsProvider>
-          <RouterProvider router={appRoute} />
-          <ReactQueryDevtools initialIsOpen={true} />
+          <ActivityProvider>
+            <RouterProvider router={appRoute} />
+            <ReactQueryDevtools initialIsOpen={true} />
+          </ActivityProvider>
         </LeadsProvider>
       </QueryClientProvider>
     </>

@@ -1,8 +1,9 @@
 import { use } from "react";
+import { useNavigate } from "react-router";
 
-import { AddNewLead } from "../../components/AddNewLead";
 import { LeadsContext } from "../../context/LeadsContext";
 
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -11,12 +12,21 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
+import { AddNewLead } from "../../components/AddNewLead";
 import { LeadsStats } from "./components/LeadsStats";
-import { SearchLeads } from "@/leads/components/SearchLeads";
 import { LeadsTable } from "./components/LeadsTable";
+import { useLeadFilters } from "@/leads/hooks/useLeadFilters";
 
-export default function LeadsListPage() {
-  const { leads, leadsCount, newLeadsCount } = use(LeadsContext);
+export function HomePage() {
+  const navigate = useNavigate();
+  const { leadsCount, newLeadsCount, qualifiedLeadsCount } = use(LeadsContext);
+  const { paginatedLeads } = useLeadFilters({
+    defaultPageSize: 2,
+  });
+
+  const navigateToLeadsList = () => {
+    navigate("/leads/list");
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -32,21 +42,32 @@ export default function LeadsListPage() {
           <AddNewLead />
         </div>
 
-        <LeadsStats leadsCount={leadsCount} newLeadsCount={newLeadsCount} />
-
-        <SearchLeads />
+        <LeadsStats
+          leadsCount={leadsCount}
+          newLeadsCount={newLeadsCount}
+          qualifiedLeadsCount={qualifiedLeadsCount}
+        />
 
         {/* Leads Table */}
         <Card>
           <CardHeader>
-            <CardTitle>New Leads</CardTitle>
+            <CardTitle className="flex justify-between items-center">
+              New Leads
+              <Button
+                size="sm"
+                variant="secondary"
+                onClick={navigateToLeadsList}
+              >
+                View All
+              </Button>
+            </CardTitle>
             <CardDescription>
               View and manage all your client leads
             </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="overflow-x-auto">
-              <LeadsTable leads={leads} />
+              <LeadsTable leads={paginatedLeads} />
             </div>
           </CardContent>
         </Card>

@@ -22,6 +22,8 @@ import {
 import { LucidePlus } from "lucide-react";
 import { activityTypes } from "../domain/activity.constant";
 import { useSearchParams } from "react-router";
+import { use } from "react";
+import { ActivityContext } from "../context/ActivityContext";
 
 const formSchema = z.object({
   leadId: z.string().min(1, "Please select a lead"),
@@ -32,22 +34,28 @@ const formSchema = z.object({
 
 interface AddActivityProps {
   leads: Array<{ id: string; name: string }>;
-  preselectedLeadId?: string;
-  open?: boolean;
-  onOpenChange?: (open: boolean) => void;
 }
 
-export const AddActivity = ({ leads, preselectedLeadId }: AddActivityProps) => {
+export const AddActivity = ({ leads }: AddActivityProps) => {
+  const { addActivity } = use(ActivityContext);
+
   const [searchParams, setSearchParams] = useSearchParams();
 
   const addActivityParam = searchParams.get("addActivity");
+  const preselectedLeadId = searchParams.get("leadId") || "";
 
   const open = addActivityParam === "true" ? true : false;
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
+    values: {
+      leadId: preselectedLeadId,
+      type: "NOTE",
+      title: "",
+      description: "",
+    },
     defaultValues: {
-      leadId: preselectedLeadId || "",
+      leadId: "",
       type: "NOTE",
       title: "",
       description: "",
@@ -55,8 +63,11 @@ export const AddActivity = ({ leads, preselectedLeadId }: AddActivityProps) => {
   });
 
   function onSubmit(data: z.infer<typeof formSchema>) {
-    console.log("Activity data:", data);
-    // TODO: Implement addActivity function
+    addActivity({
+      ...data,
+      leadName: leads.find((lead) => lead.id === data.leadId)?.name || "",
+    });
+    onCloseResetDialog(true);
   }
 
   const onChangeDialogDisplay = (isOpen: boolean) => {
@@ -73,6 +84,7 @@ export const AddActivity = ({ leads, preselectedLeadId }: AddActivityProps) => {
       form.reset();
     }
     searchParams.delete("addActivity");
+    searchParams.delete("leadId");
     setSearchParams(searchParams);
   };
 

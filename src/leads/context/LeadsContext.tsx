@@ -7,6 +7,7 @@ import {
 import type { Lead } from "../domain/lead.interfact";
 import type { LeadsState } from "../domain/leads-state.interface";
 import { leadsReducer } from "../reducer/leadsReducer";
+import { LeadStatus } from "../domain/lead-status.type";
 
 interface LeadsContext extends LeadsState {
   //methods
@@ -29,9 +30,11 @@ const getInitialState = (): LeadsState => {
   return {
     leads,
     leadsCount: leads.length,
-    newLeadsCount: leads.filter((lead) => lead.status === "NEW").length,
-    qualifiedLeadsCount: leads.filter((lead) => lead.status === "QUALIFIED")
+    newLeadsCount: leads.filter((lead) => lead.status === LeadStatus.NEW)
       .length,
+    qualifiedLeadsCount: leads.filter(
+      (lead) => lead.status === LeadStatus.QUALIFIED,
+    ).length,
   };
 };
 

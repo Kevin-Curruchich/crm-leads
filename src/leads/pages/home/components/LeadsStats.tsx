@@ -3,9 +3,14 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 interface Props {
   leadsCount: number;
   newLeadsCount: number;
+  qualifiedLeadsCount: number;
 }
 
-export const LeadsStats = ({ leadsCount, newLeadsCount }: Props) => {
+export const LeadsStats = ({
+  leadsCount,
+  newLeadsCount,
+  qualifiedLeadsCount,
+}: Props) => {
   return (
     <div>
       {/* Stats Cards */}
@@ -41,7 +46,9 @@ export const LeadsStats = ({ leadsCount, newLeadsCount }: Props) => {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-green-600">1</div>
+            <div className="text-3xl font-bold text-green-600">
+              {qualifiedLeadsCount}
+            </div>
             <p className="text-xs text-gray-500 mt-2">Ready for next step</p>
           </CardContent>
         </Card>

@@ -1,3 +1,10 @@
+export type ActivityType =
+  | "NOTE"
+  | "CALL"
+  | "EMAIL"
+  | "MEETING"
+  | "STATUS_CHANGE";
+
 export const activityTypes = [
   { value: "NOTE", label: "Note", icon: "📝" },
   { value: "CALL", label: "Call", icon: "📞" },

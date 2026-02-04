@@ -81,7 +81,7 @@ const activityTypeColors: Record<string, string> = {
   status_change: "bg-purple-50 text-purple-700 border-purple-200",
 };
 
-export default function LeadPage() {
+export function LeadPage() {
   const { leadId } = useParams<{ leadId: string }>();
   const { leads } = use(LeadsContext);
 
