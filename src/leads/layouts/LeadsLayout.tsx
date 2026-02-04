@@ -25,6 +25,11 @@ export const LeadsLayout = () => {
     <div className="min-h-screen bg-slate-50 text-slate-900">
       <header className="sticky top-0 z-30 border-b bg-white/90 backdrop-blur supports-[backdrop-filter]:bg-white/80">
         <div className="mx-auto flex max-w-7xl flex-wrap items-center gap-3 px-4 py-3">
+          <img
+            src="/leadflow.png"
+            alt="LeadFlow Logo"
+            className="h-8 w-8 rounded-sm"
+          />
           <div className="space-y-1">
             <div className="flex items-baseline gap-3">
               <h1 className="text-2xl font-semibold tracking-tight text-slate-900">
@@ -46,9 +51,7 @@ export const LeadsLayout = () => {
                         className={cn(
                           navigationMenuTriggerStyle(),
                           "rounded-full px-3 py-2 text-sm font-medium transition-colors duration-200 ease-out",
-                          isActive(item.to)
-                            ? "bg-teal-900 text-white ring-1"
-                            : "text-slate-700 hover:bg-teal-700 hover:text-white",
+                          isActive(item.to) ? "ring-1" : "text-slate-700 ",
                         )}
                       >
                         <Link to={item.to}>{item.label}</Link>
