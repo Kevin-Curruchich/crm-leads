@@ -18,7 +18,10 @@ export const CardActivity = ({ activity }: Props) => {
       <div
         className={`absolute left-[-9px] top-0 w-4 h-4 rounded-full border-2 ${activityColors[activity.type]}`}
       >
-        <div className="absolute inset-0 flex items-center justify-center text-[8px]">
+        <div
+          data-testid="activity-icon"
+          className="absolute inset-0 flex items-center justify-center text-[8px]"
+        >
           {ACTIVITY_ICONS[activity.type]}
         </div>
       </div>

@@ -22,3 +22,11 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+
+# Agent Skills  
+.agents
+.claude
+.codex
+.opencode
+.github/skills
