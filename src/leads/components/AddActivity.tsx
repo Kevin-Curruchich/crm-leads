@@ -234,7 +234,11 @@ export const AddActivity = ({ leads }: AddActivityProps) => {
             >
               Cancel
             </Button>
-            <Button type="submit" className="flex-1">
+            <Button
+              type="submit"
+              className="flex-1"
+              data-testid="submit-button"
+            >
               Save Activity
             </Button>
           </div>
