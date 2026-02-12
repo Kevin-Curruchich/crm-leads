@@ -18,7 +18,7 @@ const mockLeads: Lead[] = [
   { id: "2", name: "Lead 2" },
 ] as Lead[];
 
-const MockActiityProvider = ({ children }: { children: React.ReactNode }) => {
+const MockActityProvider = ({ children }: { children: React.ReactNode }) => {
   const mockContextValue = {
     activities: [],
     addActivity: mockAddActivity,
@@ -31,9 +31,9 @@ const MockActiityProvider = ({ children }: { children: React.ReactNode }) => {
 const renderAddActivity = (initialEntries: string = "/") => {
   return render(
     <MemoryRouter initialEntries={[initialEntries]}>
-      <MockActiityProvider>
+      <MockActityProvider>
         <AddActivity leads={mockLeads} />
-      </MockActiityProvider>
+      </MockActityProvider>
     </MemoryRouter>,
   );
 };
