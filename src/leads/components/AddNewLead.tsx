@@ -135,7 +135,7 @@ export const AddNewLead = () => {
             />
           </div>
           <div className="space-y-2">
-            <label htmlFor="name" className="text-sm font-medium">
+            <label htmlFor="lastName" className="text-sm font-medium">
               Last Name
             </label>
             <Controller

@@ -25,7 +25,11 @@ const MockActityProvider = ({ children }: { children: React.ReactNode }) => {
     deleteActivity: mockDeleteActivity,
   };
 
-  return <ActivityContext value={mockContextValue}>{children}</ActivityContext>;
+  return (
+    <ActivityContext.Provider value={mockContextValue}>
+      {children}
+    </ActivityContext.Provider>
+  );
 };
 
 const renderAddActivity = (initialEntries: string = "/") => {
@@ -125,6 +129,6 @@ describe("AddActivity", () => {
     });
 
     // Verify addActivity was not called due to validation errors
-    expect(mockAddActivity).toHaveBeenCalled();
+    expect(mockAddActivity).not.toHaveBeenCalled();
   });
 });

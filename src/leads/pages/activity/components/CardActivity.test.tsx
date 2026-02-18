@@ -32,7 +32,7 @@ describe("CardActivity", () => {
   test("Should call formatRelativeDate with correct date", () => {
     const formatRelativeDateSpy = vi.spyOn(dateUtils, "formatRelativeDate");
     render(<CardActivity activity={activityMock} />);
-    screen.debug();
+
     expect(formatRelativeDateSpy).toHaveBeenCalledWith(
       activityMock.dateCreated,
     );
