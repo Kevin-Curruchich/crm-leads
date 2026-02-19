@@ -105,6 +105,9 @@ export const leadsReducer = (
       return {
         ...state,
         leads: filteredLeads,
+        newLeadsCount: filteredLeads.filter(
+          (lead) => lead.status === LeadStatus.NEW,
+        ).length,
         leadsCount: filteredLeads.length,
       };
 
