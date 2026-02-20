@@ -30,3 +30,6 @@ dist-ssr
 .codex
 .opencode
 .github/skills
+
+# Testing coverage
+coverage
