@@ -15,7 +15,7 @@ interface LeadsContext extends LeadsState {
   updateLead: (leadId: string, leadData: Partial<Lead>) => void;
   setLeads: (leads: Lead[]) => void;
   deleteLead: (leadId: string) => void;
-  getLeadById?: (leadId: string) => Lead | undefined;
+  getLeadById: (leadId: string) => Lead | undefined;
 }
 
 export const LeadsContext = createContext<LeadsContext>({} as LeadsContext);
